@@ -42,14 +42,13 @@ VocalMagic is an innovative audio processing tool designed to transform and enha
 Run the `auto_tune.py` script with optional command-line arguments to start the auto-tuner:
 
 ```sh
-python auto_tune.py --sample-rate 44100 --chunk-size 1024 --lenience 0.3 --frequency-resolution 4
+python auto_tune.py --sample-rate 44100 --chunk-size 1024 --frequency-resolution 4
 ```
 
 #### Command-Line Arguments
 
 - `--sample-rate`: Sample rate for audio processing (default: 44100)
 - `--chunk-size`: Chunk size for audio processing (default: 512)
-- `--lenience`: Lenience for harmonic frequency extractor (default: 0.3)
 - `--frequency-resolution`: Frequency resolution for the auto tuner (default: 4)
 
 ## Contributions
