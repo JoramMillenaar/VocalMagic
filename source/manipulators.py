@@ -2,9 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Sequence
 
 import numpy as np
-from matplotlib import pyplot as plt
-from numpy.fft import rfft, rfftfreq
-from scipy.signal import butter, lfilter
 
 from source.dataclasses import WaveID
 from source.services import resample_audio, snap_nearest_index
