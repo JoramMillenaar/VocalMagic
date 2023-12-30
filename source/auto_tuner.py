@@ -1,7 +1,7 @@
 from shared.base import AudioStreamDecorator, AudioStream
 from source.pitch_detectors import PitchDetector
 from source.manipulators import Manipulator
-from source.window_managers import AudioOverlapping
+from source.window_managers import AudioOverlapper
 
 
 class AudioModifierDecorator(AudioStreamDecorator):
@@ -14,7 +14,7 @@ class AudioModifierDecorator(AudioStreamDecorator):
         super().__init__(stream)
         self.pitch_detector = pitch_detector
         self.frequency_resolution = frequency_resolution
-        self.overlapper = AudioOverlapping(self.frequency_resolution, self.chunk_size, self.sample_rate)
+        self.overlapper = AudioOverlapper(self.frequency_resolution, self.chunk_size, self.sample_rate)
         self.manipulator = manipulator
 
     def transform(self, stream_item):

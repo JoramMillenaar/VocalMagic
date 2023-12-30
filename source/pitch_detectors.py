@@ -2,10 +2,9 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from source.dataclasses import WaveID
 from source.fft import FFTAnalyser
 from source.services import base_frequency_indexes, loudest_harmonic_of_loudest_base
-from source.dataclasses import WaveID, AudioAnalytics
+from source.dataclasses import WaveID
 
 
 class PitchDetector(ABC):
@@ -21,8 +20,11 @@ class SimplePitchDetector(PitchDetector):
     def __init__(self, sample_rate: int):
         super().__init__(sample_rate)
         self.analyser = FFTAnalyser(sample_rate)
+        self.primed = False
 
     def extract_wave_id(self, audio_chunk) -> WaveID:
+        if not self.primed:
+            self.analyser.prime(len(audio_chunk))
         analytics = self.analyser.analyse(audio_chunk)
         index_loudest = np.argmax(analytics.magnitudes)
         frequency = analytics.frequency_range[index_loudest]
