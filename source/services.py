@@ -83,4 +83,12 @@ def snap_nearest_index(value: float, options: Sequence[float]) -> int:
     return nearest_index
 
 
+def adjust_chunk_size(chunk, chunk_size):
+    if len(chunk) < chunk_size:
+        return np.pad(chunk, (0, chunk_size - len(chunk)), 'constant')
+    if len(chunk) > chunk_size:
+        return chunk[:chunk_size]
+    return chunk
+
+
 NOTE_FREQUENCIES = tuple(calculate_frequency(key) for key in range(16, 89))
