@@ -1,7 +1,8 @@
 import argparse
 
-from shared.outputs import AudioPlaybackDecorator
-from source.auto_tuner import AudioModifierDecorator
+from source.outputs import AudioPlaybackProcessor
+from source.auto_tuner import AudioModifierProcessor
+from source.pipelines import AudioProcessingPipeline
 from source.pitch_detectors import SimplePitchDetector
 from source.input_streams import MicrophoneStream
 from source.manipulators import AutoTuneManipulator
@@ -24,15 +25,22 @@ def parse_args():
 def main():
     args = parse_args()
 
-    s = MicrophoneStream(sample_rate=args.sample_rate, chunk_size=args.chunk_size)
-    s = AudioModifierDecorator(
-        stream=s,
+    _input = MicrophoneStream(sample_rate=args.sample_rate, chunk_size=args.chunk_size)
+    auto_tuner = AudioModifierProcessor(
         pitch_detector=SimplePitchDetector(sample_rate=args.sample_rate),
         frequency_resolution=args.frequency_resolution,
-        manipulator=AutoTuneManipulator(args.sample_rate, NOTE_FREQUENCIES)
+        manipulator=AutoTuneManipulator(args.sample_rate, NOTE_FREQUENCIES),
+        sample_rate=args.sample_rate,
+        chunk_size=args.chunk_size
     )
-    s = AudioPlaybackDecorator(s)
-    s.run()
+    speaker_output = AudioPlaybackProcessor(sample_rate=args.sample_rate, chunk_size=args.chunk_size)
+
+    pipeline = AudioProcessingPipeline()
+    pipeline.add_processor(auto_tuner)
+    pipeline.add_processor(speaker_output)
+
+    for audio_chunk in _input:
+        pipeline.process(audio_chunk)
 
 
 if __name__ == '__main__':

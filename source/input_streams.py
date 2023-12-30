@@ -4,12 +4,13 @@ from typing import Iterator
 import numpy as np
 import sounddevice as sd
 
-from shared.base import AudioStream
+from source.base import AudioStream
 
 
 class MicrophoneStream(AudioStream):
     def __init__(self, chunk_size: int, sample_rate: int, channels: int = 1):
-        super().__init__(sample_rate=sample_rate, chunk_size=chunk_size)
+        super().__init__(sample_rate=sample_rate)
+        self.chunk_size = chunk_size
         self.channels = channels
         self.stream = None
 
@@ -61,9 +62,10 @@ class ComplexSineWaveGenerator:
 
 class ComplexSineWaveStream(AudioStream):
     def __init__(self, chunk_size: int, sample_rate: int):
-        super().__init__(sample_rate=sample_rate, chunk_size=chunk_size)
+        super().__init__(sample_rate=sample_rate)
         self.amplitude = 0
         self._frequency = 0
+        self.chunk_size = chunk_size
         self._gen_cache = ComplexSineWaveGenerator(0, self.sample_rate, self.chunk_size)
 
     @property
@@ -85,7 +87,8 @@ class WAVFileReadStream(AudioStream):
         self.file_path = file_path
         self.wav_file = wave.open(self.file_path, 'rb')
         self.channels = self.wav_file.getnchannels()
-        super().__init__(sample_rate=self.wav_file.getframerate(), chunk_size=chunk_size)
+        self.chunk_size = chunk_size
+        super().__init__(sample_rate=self.wav_file.getframerate())
 
     def iterable(self) -> Iterator:
         while True:
@@ -110,7 +113,8 @@ class WAVFileReadStream(AudioStream):
 
 class ReadStream(AudioStream):
     def __init__(self, read_stream: AudioStream):
-        super().__init__(sample_rate=read_stream.sample_rate, chunk_size=read_stream.chunk_size)
+        super().__init__(sample_rate=read_stream.sample_rate)
+        self.chunk_size = read_stream.chunk_size  # chunk_size should eventually be derived from len(audio_chunk)
         self.read_stream = read_stream
 
     def iterable(self) -> Iterator:
@@ -120,12 +124,12 @@ class ReadStream(AudioStream):
 
 class RandomNoiseStream(AudioStream):
     def __init__(self, chunk_size: int, sample_rate: int, amplitude=1.0):
-        super().__init__(sample_rate=sample_rate, chunk_size=chunk_size)
+        super().__init__(sample_rate=sample_rate)
+        self.chunk_size = chunk_size
         self.amplitude = amplitude
 
     def iterable(self):
         while True:
-            # Generate random noise
             noise = np.random.randn(self.chunk_size) * self.amplitude
             yield noise
 

@@ -4,7 +4,7 @@ import wave
 import numpy as np
 import sounddevice as sd
 
-from shared.base import AudioStreamDecorator, AudioStream
+from source.base import AudioProcessor
 
 
 def array_to_wav_format(data: np.array):
@@ -12,16 +12,16 @@ def array_to_wav_format(data: np.array):
     return (data * 32767).astype(np.int16).tobytes()
 
 
-class AudioPlaybackDecorator(AudioStreamDecorator):
-    def __init__(self, stream: AudioStream):
-        super().__init__(stream)
-        self.output = sd.RawOutputStream(self.sample_rate, channels=1, dtype='float32', blocksize=self.chunk_size)
+class AudioPlaybackProcessor(AudioProcessor):
+    def __init__(self, chunk_size, sample_rate):
+        super().__init__(sample_rate)
+        self.output = sd.RawOutputStream(self.sample_rate, channels=1, dtype='float32', blocksize=chunk_size)
         self.output.start()
 
-        self.play_thread = threading.Thread(target=self.play, args=(np.zeros(self.chunk_size, dtype=np.float32),))
+        self.play_thread = threading.Thread(target=self.play, args=(np.zeros(chunk_size, dtype=np.float32),))
         self.play_thread.start()
 
-    def transform(self, stream_item):
+    def process(self, stream_item):
         self.play_thread.join()
         self.play_thread = threading.Thread(target=self.play, args=(stream_item,))
         self.play_thread.start()
@@ -30,14 +30,13 @@ class AudioPlaybackDecorator(AudioStreamDecorator):
     def play(self, current):
         self.output.write(np.clip(current, -1, 1).astype(np.float32))
 
-    def close(self):
+    def __del__(self):
         self.output.close()
-        super().close()
 
 
-class AudioFileOutputDecorator(AudioStreamDecorator):
-    def __init__(self, stream: AudioStream, filename: str):
-        super().__init__(stream)
+class AudioFileOutputProcessor(AudioProcessor):
+    def __init__(self, sample_rate, filename: str):
+        super().__init__(sample_rate)
         self.filename = filename
         self.wav_file = wave.open(self.filename, 'wb')
         self.wav_file.setnchannels(1)
@@ -47,7 +46,7 @@ class AudioFileOutputDecorator(AudioStreamDecorator):
         self.write_thread = threading.Thread(target=self.write_to_file, args=(b'',))
         self.write_thread.start()
 
-    def transform(self, stream_item):
+    def process(self, stream_item):
         data = array_to_wav_format(stream_item)
         self.write_thread.join()
         self.write_thread = threading.Thread(target=self.write_to_file, args=(data,))
@@ -57,7 +56,6 @@ class AudioFileOutputDecorator(AudioStreamDecorator):
     def write_to_file(self, data):
         self.wav_file.writeframes(data)
 
-    def close(self):
+    def __del__(self):
         self.write_thread.join()  # Ensure the last bit of audio is written
         self.wav_file.close()
-        super().close()
