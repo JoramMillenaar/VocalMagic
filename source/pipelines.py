@@ -1,4 +1,4 @@
-from source.base import AudioProcessor
+from source.base import AudioProcessor, AudioStream
 
 
 class AudioProcessingPipeline:
@@ -12,3 +12,7 @@ class AudioProcessingPipeline:
         for processor in self.processors:
             audio_data = processor.process(audio_data)
         return audio_data
+
+    def run(self, audio_source: AudioStream):
+        for audio_chunk in audio_source:
+            self.process(audio_chunk)

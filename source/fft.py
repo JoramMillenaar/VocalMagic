@@ -39,6 +39,8 @@ class FFTAnalyser:
         return self._frequency_range
 
     def analyse(self, audio_chunk: np.array) -> FFTAnalytics:
+        if self._frequency_range is None:
+            self.prime(len(audio_chunk))
         complex_spectrum = np.fft.rfft(audio_chunk)[self.min_index:self.max_index]
         return FFTAnalytics(
             chunk_size=len(audio_chunk),
