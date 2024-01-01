@@ -37,51 +37,6 @@ class MicrophoneStream(AudioStream):
         super().close()
 
 
-class ComplexSineWaveGenerator:
-    def __init__(self, freq: float, sample_rate: int, chunk_size: int):
-        self.freq = freq
-        self.sample_rate = sample_rate
-        self.chunk_size = chunk_size
-        self.t = 0  # Current time index
-        self.phase_offset = 0  # Phase offset in radians
-
-        self.current = None
-
-    @property
-    def omega(self):
-        return 2 * np.pi * self.freq
-
-    def __next__(self):
-        samples = np.arange(self.t, self.t + self.chunk_size, dtype=np.float32) / self.sample_rate
-        self.t += self.chunk_size
-        return np.sin(self.omega * samples)
-
-    def __iter__(self):
-        return self
-
-
-class ComplexSineWaveStream(AudioStream):
-    def __init__(self, chunk_size: int, sample_rate: int):
-        super().__init__(sample_rate=sample_rate)
-        self.amplitude = 0
-        self._frequency = 0
-        self.chunk_size = chunk_size
-        self._gen_cache = ComplexSineWaveGenerator(0, self.sample_rate, self.chunk_size)
-
-    @property
-    def frequency(self):
-        return self._frequency
-
-    @frequency.setter
-    def frequency(self, value):
-        self._frequency = value
-        self._gen_cache.freq = value
-
-    def iterable(self):
-        for audio_chunk in self._gen_cache:
-            yield audio_chunk * self.amplitude
-
-
 class WAVFileReadStream(AudioStream):
     def __init__(self, file_path: str, chunk_size: int):
         self.file_path = file_path
@@ -109,28 +64,3 @@ class WAVFileReadStream(AudioStream):
     def close(self):
         self.wav_file.close()
         super().close()
-
-
-class ReadStream(AudioStream):
-    def __init__(self, read_stream: AudioStream):
-        super().__init__(sample_rate=read_stream.sample_rate)
-        self.chunk_size = read_stream.chunk_size  # chunk_size should eventually be derived from len(audio_chunk)
-        self.read_stream = read_stream
-
-    def iterable(self) -> Iterator:
-        while True:
-            yield self.read_stream.current
-
-
-class RandomNoiseStream(AudioStream):
-    def __init__(self, chunk_size: int, sample_rate: int, amplitude=1.0):
-        super().__init__(sample_rate=sample_rate)
-        self.chunk_size = chunk_size
-        self.amplitude = amplitude
-
-    def iterable(self):
-        while True:
-            noise = np.random.randn(self.chunk_size) * self.amplitude
-            yield noise
-
-

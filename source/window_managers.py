@@ -47,3 +47,12 @@ class LowPassFilter(AudioProcessor):
 
     def process(self, audio_chunk):
         return lfilter(self.b, self.a, audio_chunk)
+
+
+class MonoAudioProcessor(AudioProcessor):
+    def process(self, stream_item):
+        if len(stream_item.shape) > 1 and stream_item.shape[1] > 1:
+            mono_data = np.mean(stream_item, axis=1)
+        else:
+            mono_data = stream_item
+        return mono_data

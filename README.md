@@ -50,6 +50,9 @@ python auto_tune.py --sample-rate 44100 --chunk-size 1024
 - `--sample-rate`: Sample rate for audio processing (default: 44100)
 - `--chunk-size`: Chunk size for audio processing (default: 512)
 - `--threshold`: Pitch detection sensitivity. Lower values increase sensitivity but conversely lead to false positives (default: 0.1)
+- `--source-file`: Source WAV file to process. If empty, uses microphone input.
+- `--output-file`: Output WAV file to write. If empty, plays back audio.
+
 
 ## Contributions
 
