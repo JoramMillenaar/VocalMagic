@@ -19,8 +19,8 @@ def calculate_frequency(key: int, reference_key=49, reference_freq=440.0) -> flo
     return reference_freq * 2 ** ((key - reference_key) / 12)
 
 
-def resample_audio(stream_item, chunk_size, factor):
-    return resample(stream_item, num=int(chunk_size * factor))
+def resample_audio(audio_chunk, factor):
+    return resample(audio_chunk, num=int(len(audio_chunk) * factor))
 
 
 def base_frequency_indexes(frequencies: np.ndarray, lenience: float = 0.0):

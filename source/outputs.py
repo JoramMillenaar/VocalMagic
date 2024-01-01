@@ -35,7 +35,7 @@ class AudioPlaybackProcessor(AudioProcessor):
 
 
 class AudioFileOutputProcessor(AudioProcessor):
-    def __init__(self, sample_rate, filename: str):
+    def __init__(self, filename: str, sample_rate):
         super().__init__(sample_rate)
         self.filename = filename
         self.wav_file = wave.open(self.filename, 'wb')

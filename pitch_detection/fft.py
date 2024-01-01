@@ -3,6 +3,8 @@ from functools import cached_property
 
 import numpy as np
 
+from source.window_managers import AudioOverlapProcessor
+
 
 @dataclass
 class FFTAnalytics:
@@ -14,10 +16,13 @@ class FFTAnalytics:
 
 
 class FFTAnalyser:
-    def __init__(self, sample_rate: int, min_freq: float = 85, max_freq: float = 1100):
+    def __init__(self, sample_rate: int, frequency_resolution: int = 3, min_freq: float = 85, max_freq: float = 1100):
         self.sample_rate = sample_rate
+        self.frequency_resolution = frequency_resolution
         self.min_freq = min_freq
         self.max_freq = max_freq
+
+        self.overlap = AudioOverlapProcessor(sample_rate=sample_rate, frequency_resolution=frequency_resolution)
         self._frequency_range = None
 
     def prime(self, chunk_size):
@@ -32,13 +37,12 @@ class FFTAnalyser:
     def max_index(self):
         return np.searchsorted(self.frequency_range, self.max_freq, side='right')
 
-    @cached_property
+    @property
     def frequency_range(self):
-        if self._frequency_range is None:
-            raise ValueError("FFTAnalyser is not primed with chunk size.")
         return self._frequency_range
 
     def analyse(self, audio_chunk: np.array) -> FFTAnalytics:
+        audio_chunk = self.overlap.process(audio_chunk)
         if self._frequency_range is None:
             self.prime(len(audio_chunk))
         complex_spectrum = np.fft.rfft(audio_chunk)[self.min_index:self.max_index]

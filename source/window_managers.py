@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.signal import butter, lfilter
 
 from source.base import AudioProcessor
 
@@ -35,3 +36,14 @@ class DecreaseWindowSizeProcessor(AudioProcessor):
 
     def process(self, stream_item):
         return stream_item[-self.desired_chunk_size:]
+
+
+class LowPassFilter(AudioProcessor):
+    def __init__(self, cutoff_frequency, sample_rate, order=5):
+        super().__init__(sample_rate)
+        self.cutoff_frequency = cutoff_frequency
+        self.order = order
+        self.b, self.a = butter(self.order, self.cutoff_frequency / (0.5 * sample_rate), btype='low')
+
+    def process(self, audio_chunk):
+        return lfilter(self.b, self.a, audio_chunk)

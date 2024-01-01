@@ -2,9 +2,9 @@ import argparse
 
 from source.outputs import AudioPlaybackProcessor
 from source.pipelines import AudioProcessingPipeline
-from source.pitch_detectors import SimplePitchDetector
+from pitch_detection.pitch_detectors import YinPitchDetector
 from source.input_streams import MicrophoneStream
-from source.pitch_shifters import SelectionPitchShifter
+from source.pitch_shifters import SelectionPitchHandler
 from source.services import NOTE_FREQUENCIES
 
 
@@ -26,11 +26,9 @@ def main():
 
     mic_source = MicrophoneStream(sample_rate=args.sample_rate, chunk_size=args.chunk_size)
 
-    pitch_detector = SimplePitchDetector(sample_rate=args.sample_rate, frequency_resolution=args.frequency_resolution)
-    pitch_shifter = SelectionPitchShifter(
-        args.sample_rate,
-        pitch_detector=pitch_detector,
-        frequency_selection=NOTE_FREQUENCIES,
+    pitch_detector = YinPitchDetector(sample_rate=args.sample_rate)
+    pitch_shifter = SelectionPitchHandler(
+        args.sample_rate, pitch_detector=pitch_detector, frequency_selection=NOTE_FREQUENCIES
     )
     speaker_output = AudioPlaybackProcessor(sample_rate=args.sample_rate, chunk_size=args.chunk_size)
 
