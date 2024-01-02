@@ -1,12 +1,13 @@
 import argparse
 
-from source.window_managers import MonoAudioProcessor
 from pitch_detection.pitch_detectors import YinPitchDetector
+from source.audio_stretchers import ResampleStretchAlgorithm
 from source.input_streams import MicrophoneStream, WAVFileReadStream
 from source.outputs import AudioPlaybackProcessor, AudioFileOutputProcessor
 from source.pipelines import AudioProcessingPipeline
-from source.pitch_shifters import SelectionPitchHandler
+from source.pitch_handler import SelectionPitchHandler
 from source.services import NOTE_FREQUENCIES
+from source.window_managers import MonoAudioProcessor
 
 
 def parse_args():
@@ -40,9 +41,11 @@ def main():
     else:
         audio_source = MicrophoneStream(sample_rate=args.sample_rate, chunk_size=args.chunk_size)
 
-    pitch_detector = YinPitchDetector(sample_rate=args.sample_rate, threshold=args.threshold)
     pitch_shifter = SelectionPitchHandler(
-        args.sample_rate, pitch_detector=pitch_detector, frequency_selection=NOTE_FREQUENCIES
+        args.sample_rate,
+        pitch_detector=YinPitchDetector(sample_rate=args.sample_rate, threshold=args.threshold),
+        frequency_selection=NOTE_FREQUENCIES,
+        stretch_algorithm=ResampleStretchAlgorithm()
     )
 
     pipeline = AudioProcessingPipeline()
