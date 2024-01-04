@@ -6,7 +6,7 @@ from source.base import AudioProcessor
 
 class AudioOverlapProcessor(AudioProcessor):
     def __init__(self, frequency_resolution, sample_rate):
-        super().__init__(sample_rate)
+        self.sample_rate = sample_rate
         self.desired_chunk_length = sample_rate // frequency_resolution
 
         self.overlap_factor = None
@@ -29,8 +29,7 @@ class AudioOverlapProcessor(AudioProcessor):
 
 
 class DecreaseWindowSizeProcessor(AudioProcessor):
-    def __init__(self, desired_chunk_size: int, sample_rate):
-        super().__init__(sample_rate)
+    def __init__(self, desired_chunk_size: int):
         self.desired_chunk_size = desired_chunk_size
         self.chunk_size = desired_chunk_size
 
@@ -40,7 +39,7 @@ class DecreaseWindowSizeProcessor(AudioProcessor):
 
 class LowPassFilter(AudioProcessor):
     def __init__(self, cutoff_frequency, sample_rate, order=5):
-        super().__init__(sample_rate)
+        self.sample_rate = sample_rate
         self.cutoff_frequency = cutoff_frequency
         self.order = order
         self.b, self.a = butter(self.order, self.cutoff_frequency / (0.5 * sample_rate), btype='low')

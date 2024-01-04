@@ -53,9 +53,6 @@ class AudioStream(Iterator, ABC):
 
 
 class AudioProcessor(ABC):
-    def __init__(self, sample_rate):
-        self.sample_rate = sample_rate
-
     @abstractmethod
     def process(self, stream_item: np.ndarray) -> np.ndarray:
         pass

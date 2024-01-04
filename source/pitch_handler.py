@@ -11,14 +11,13 @@ from source.services import snap_nearest_index
 
 
 class PitchHandler(AudioProcessor, ABC):
-    def __init__(self, sample_rate, pitch_detector: PitchDetector, stretch_algorithm: StretchAlgorithm):
-        super().__init__(sample_rate)
+    def __init__(self, pitch_detector: PitchDetector, stretch_algorithm: StretchAlgorithm):
         self.pitch_detector = pitch_detector
         self.stretch_algorithm = stretch_algorithm
 
     def process(self, stream_item: np.ndarray) -> np.ndarray:
-        stream_item = self.pitch_detector.process(stream_item)
-        return self.handle(stream_item, self.pitch_detector.base_frequency)
+        wave_id = self.pitch_detector.extract_base_frequency(stream_item)
+        return self.handle(stream_item, wave_id)
 
     @abstractmethod
     def handle(self, audio_chunk: np.ndarray, f0: WaveID) -> np.ndarray:
@@ -26,11 +25,8 @@ class PitchHandler(AudioProcessor, ABC):
 
 
 class MonoTonePitchHandler(PitchHandler):
-    def __init__(self,
-                 sample_rate,
-                 pitch_detector: PitchDetector,
-                 frequency, stretch_algorithm):
-        super().__init__(sample_rate, pitch_detector, stretch_algorithm)
+    def __init__(self, pitch_detector: PitchDetector, frequency, stretch_algorithm):
+        super().__init__(pitch_detector, stretch_algorithm)
         self.frequency = frequency
 
     def handle(self, audio_chunk: np.ndarray, f0: WaveID):
@@ -39,12 +35,8 @@ class MonoTonePitchHandler(PitchHandler):
 
 
 class SelectionPitchHandler(PitchHandler):
-    def __init__(self,
-                 sample_rate,
-                 pitch_detector: PitchDetector,
-                 frequency_selection: Sequence[float],
-                 stretch_algorithm):
-        super().__init__(sample_rate, pitch_detector, stretch_algorithm)
+    def __init__(self, pitch_detector: PitchDetector, frequency_selection: Sequence[float], stretch_algorithm):
+        super().__init__(pitch_detector, stretch_algorithm)
         self.frequency_selection = frequency_selection
 
     def handle(self, audio_chunk: np.ndarray, f0: WaveID):

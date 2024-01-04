@@ -14,7 +14,7 @@ def array_to_wav_format(data: np.array):
 
 class AudioPlaybackProcessor(AudioProcessor):
     def __init__(self, chunk_size, sample_rate):
-        super().__init__(sample_rate)
+        self.sample_rate = sample_rate
         self.output = sd.RawOutputStream(self.sample_rate, channels=1, dtype='float32', blocksize=chunk_size)
         self.output.start()
 
@@ -36,7 +36,7 @@ class AudioPlaybackProcessor(AudioProcessor):
 
 class AudioFileOutputProcessor(AudioProcessor):
     def __init__(self, filename: str, sample_rate):
-        super().__init__(sample_rate)
+        self.sample_rate = sample_rate
         self.filename = filename
         self.wav_file = wave.open(self.filename, 'wb')
         self.wav_file.setnchannels(1)

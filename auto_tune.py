@@ -32,7 +32,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    to_mono = MonoAudioProcessor(sample_rate=None)  # Not yet supporting multi-channel audio forms
+    to_mono = MonoAudioProcessor()  # Not yet supporting multi-channel audio forms
 
     # Select audio source based on the provided argument
     if args.source_file:
@@ -42,7 +42,6 @@ def main():
         audio_source = MicrophoneStream(sample_rate=args.sample_rate, chunk_size=args.chunk_size)
 
     pitch_shifter = SelectionPitchHandler(
-        args.sample_rate,
         pitch_detector=YinPitchDetector(sample_rate=args.sample_rate, threshold=args.threshold),
         frequency_selection=NOTE_FREQUENCIES,
         stretch_algorithm=ResampleStretchAlgorithm()
