@@ -5,9 +5,9 @@ from source.base import AudioProcessor
 
 
 class AudioOverlapProcessor(AudioProcessor):
-    def __init__(self, frequency_resolution, sample_rate):
+    def __init__(self, output_chunk_size, sample_rate):
         self.sample_rate = sample_rate
-        self.desired_chunk_length = sample_rate // frequency_resolution
+        self.output_chunk_size = output_chunk_size
 
         self.overlap_factor = None
         self.overlap_size = None
@@ -15,7 +15,7 @@ class AudioOverlapProcessor(AudioProcessor):
         self.chunk_size = None
 
     def prime(self, chunk_size):
-        self.overlap_factor = self.desired_chunk_length // chunk_size
+        self.overlap_factor = self.output_chunk_size // chunk_size
         self.overlap_size = int(chunk_size * self.overlap_factor)
         self.buffer = np.zeros(self.overlap_size, dtype=np.float32)
         self.chunk_size = self.overlap_size + chunk_size

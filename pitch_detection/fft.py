@@ -22,7 +22,8 @@ class FFTAnalyser:
         self.min_freq = min_freq
         self.max_freq = max_freq
 
-        self.overlap = AudioOverlapProcessor(sample_rate=sample_rate, frequency_resolution=frequency_resolution)
+        self.overlap = AudioOverlapProcessor(sample_rate=sample_rate,
+                                             output_chunk_size=sample_rate // frequency_resolution)
         self._frequency_range = None
 
     def prime(self, chunk_size):
