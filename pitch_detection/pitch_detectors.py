@@ -54,3 +54,24 @@ class YinPitchDetector(PitchDetector):
     def extract_base_frequency(self, audio_chunk: np.array) -> WaveID:
         frequency = yin_pitch_detection(audio_chunk, self.sample_rate, self.threshold)
         return WaveID(frequency or 0, 1.0)
+
+
+class AutoCorrelationPitchDetector(PitchDetector):
+    def __init__(self, sample_rate, max_frequency=1000, min_frequency=80):
+        self.sample_rate = sample_rate
+        self.max_lag = int(sample_rate / min_frequency)
+        self.min_lag = int(sample_rate / max_frequency)
+
+    def extract_base_frequency(self, audio_chunk: np.array) -> WaveID:
+        chunk_normalized = audio_chunk - np.mean(audio_chunk)
+
+        corr = np.correlate(chunk_normalized, chunk_normalized, mode='full')
+        corr_half = corr[corr.size // 2:]
+
+        if self.min_lag >= self.max_lag or len(corr_half[self.min_lag:self.max_lag]) == 0:
+            return WaveID(0, 1.0)
+
+        peak_index = np.argmax(corr_half[self.min_lag:self.max_lag]) + self.min_lag
+        frequency = self.sample_rate / peak_index if peak_index != 0 else 0
+
+        return WaveID(frequency, 1.0)
