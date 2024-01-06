@@ -55,3 +55,25 @@ class MonoAudioProcessor(AudioProcessor):
         else:
             mono_data = stream_item
         return mono_data
+
+
+class SimpleNoiseGateAudioProcessor(AudioProcessor):
+    def __init__(self, threshold: float = 0.01):
+        self.threshold = threshold
+
+    def process(self, audio_chunk: np.ndarray) -> np.ndarray:
+        if np.sum(np.abs(audio_chunk)) / len(audio_chunk) > self.threshold:
+            return audio_chunk
+        return np.zeros(len(audio_chunk), dtype=np.float32)
+
+
+class BandPassFilterAudioProcessor(AudioProcessor):
+    def __init__(self, sample_rate, low_cut=80, high_cut=1100, order=5):
+        self.sample_rate = sample_rate
+        self.low_cut = low_cut
+        self.high_cut = high_cut
+        self.order = order
+        self.b, self.a = butter(self.order, [self.low_cut, self.high_cut], btype='band', fs=sample_rate)
+
+    def process(self, stream_item: np.ndarray) -> np.ndarray:
+        return lfilter(self.b, self.a, stream_item)
