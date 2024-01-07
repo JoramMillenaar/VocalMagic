@@ -21,11 +21,11 @@ class AudioPlaybackProcessor(AudioProcessor):
         self.play_thread = threading.Thread(target=self.play, args=(np.zeros(chunk_size, dtype=np.float32),))
         self.play_thread.start()
 
-    def process(self, stream_item):
+    def process(self, audio_chunk):
         self.play_thread.join()
-        self.play_thread = threading.Thread(target=self.play, args=(stream_item,))
+        self.play_thread = threading.Thread(target=self.play, args=(audio_chunk,))
         self.play_thread.start()
-        return stream_item
+        return audio_chunk
 
     def play(self, current):
         self.output.write(np.clip(current, -1, 1).astype(np.float32))
@@ -46,12 +46,12 @@ class AudioFileOutputProcessor(AudioProcessor):
         self.write_thread = threading.Thread(target=self.write_to_file, args=(b'',))
         self.write_thread.start()
 
-    def process(self, stream_item):
-        data = array_to_wav_format(stream_item)
+    def process(self, audio_chunk):
+        data = array_to_wav_format(audio_chunk)
         self.write_thread.join()
         self.write_thread = threading.Thread(target=self.write_to_file, args=(data,))
         self.write_thread.start()
-        return stream_item
+        return audio_chunk
 
     def write_to_file(self, data):
         self.wav_file.writeframes(data)

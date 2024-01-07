@@ -20,10 +20,10 @@ class AudioOverlapProcessor(AudioProcessor):
         self.buffer = np.zeros(self.overlap_size, dtype=np.float32)
         self.chunk_size = self.overlap_size + chunk_size
 
-    def process(self, stream_item):
+    def process(self, audio_chunk):
         if self.buffer is None:
-            self.prime(len(stream_item))
-        chunk = np.concatenate((self.buffer, stream_item))
+            self.prime(len(audio_chunk))
+        chunk = np.concatenate((self.buffer, audio_chunk))
         self.buffer = chunk[-self.overlap_size:]
         return chunk
 
@@ -33,8 +33,8 @@ class DecreaseWindowSizeProcessor(AudioProcessor):
         self.desired_chunk_size = desired_chunk_size
         self.chunk_size = desired_chunk_size
 
-    def process(self, stream_item):
-        return stream_item[-self.desired_chunk_size:]
+    def process(self, audio_chunk):
+        return audio_chunk[-self.desired_chunk_size:]
 
 
 class LowPassFilter(AudioProcessor):
@@ -49,11 +49,11 @@ class LowPassFilter(AudioProcessor):
 
 
 class MonoAudioProcessor(AudioProcessor):
-    def process(self, stream_item):
-        if len(stream_item.shape) > 1 and stream_item.shape[1] > 1:
-            mono_data = np.mean(stream_item, axis=1)
+    def process(self, audio_chunk):
+        if len(audio_chunk.shape) > 1 and audio_chunk.shape[1] > 1:
+            mono_data = np.mean(audio_chunk, axis=1)
         else:
-            mono_data = stream_item
+            mono_data = audio_chunk
         return mono_data
 
 
@@ -75,5 +75,5 @@ class BandPassFilterAudioProcessor(AudioProcessor):
         self.order = order
         self.b, self.a = butter(self.order, [self.low_cut, self.high_cut], btype='band', fs=sample_rate)
 
-    def process(self, stream_item: np.ndarray) -> np.ndarray:
-        return lfilter(self.b, self.a, stream_item)
+    def process(self, audio_chunk: np.ndarray) -> np.ndarray:
+        return lfilter(self.b, self.a, audio_chunk)

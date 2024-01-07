@@ -54,5 +54,5 @@ class AudioStream(Iterator, ABC):
 
 class AudioProcessor(ABC):
     @abstractmethod
-    def process(self, stream_item: np.ndarray) -> np.ndarray:
+    def process(self, audio_chunk: np.ndarray) -> np.ndarray:
         pass

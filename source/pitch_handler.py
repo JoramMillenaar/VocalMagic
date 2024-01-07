@@ -15,9 +15,9 @@ class PitchHandler(AudioProcessor, ABC):
         self.pitch_detector = pitch_detector
         self.stretch_algorithm = stretch_algorithm
 
-    def process(self, stream_item: np.ndarray) -> np.ndarray:
-        wave_id = self.pitch_detector.extract_base_frequency(stream_item)
-        return self.handle(stream_item, wave_id)
+    def process(self, audio_chunk: np.ndarray) -> np.ndarray:
+        wave_id = self.pitch_detector.extract_base_frequency(audio_chunk)
+        return self.handle(audio_chunk, wave_id)
 
     @abstractmethod
     def handle(self, audio_chunk: np.ndarray, f0: WaveID) -> np.ndarray:
