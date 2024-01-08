@@ -1,6 +1,5 @@
 import argparse
 
-from pitch_detection.pitch_detectors import YinPitchDetector
 from source.frequency_getters import NearestFrequencyGetter
 from source.input_streams import MicrophoneStream, WAVFileReadStream
 from source.outputs import AudioPlaybackProcessor, AudioFileOutputProcessor

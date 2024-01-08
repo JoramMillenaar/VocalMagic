@@ -1,12 +1,11 @@
 from abc import ABC
-from typing import Sequence
 
 import numpy as np
-from scipy.signal import resample
 
 from pitch_detection.pitch_detectors import YinPitchDetector
 from source.base import AudioProcessor
 from source.frequency_getters import FrequencyGetter
+from source.services import resample_to_size
 
 
 class PitchShifter(AudioProcessor, ABC):
@@ -23,5 +22,4 @@ class YinPitchShifter(PitchShifter):
         f0 = self.pitch_detector.extract_base_frequency(audio_chunk)
         target_frequency = self.frequency_getter.get_target_frequency(f0.frequency)
         stretch_factor = f0.frequency / target_frequency
-        return resample(audio_chunk, num=int(len(audio_chunk) * stretch_factor))
-
+        return resample_to_size(audio_chunk, stretch_factor)

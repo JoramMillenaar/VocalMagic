@@ -91,4 +91,8 @@ def adjust_chunk_size(chunk, chunk_size):
     return chunk
 
 
+def resample_to_size(audio_chunk: np.array, factor: float):
+    return resample(audio_chunk, num=int(len(audio_chunk) * factor))
+
+
 NOTE_FREQUENCIES = tuple(calculate_frequency(key) for key in range(16, 89))
