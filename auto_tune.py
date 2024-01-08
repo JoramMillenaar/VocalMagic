@@ -1,12 +1,12 @@
 import argparse
 
-from source.frequency_getters import NearestFrequencyGetter
-from source.input_streams import MicrophoneStream, WAVFileReadStream
-from source.outputs import AudioPlaybackProcessor, AudioFileOutputProcessor
-from source.pipelines import AudioProcessingPipeline
-from source.pitch_shifter import YinPitchShifter
-from source.services import NOTE_FREQUENCIES
-from source.window_managers import MonoAudioProcessor
+from src.frequency_getters import NearestFrequencyGetter
+from src.input_streams import MicrophoneStream, WAVFileReadStream
+from src.outputs import AudioPlaybackProcessor, AudioFileOutputProcessor
+from src.pipelines import AudioProcessingPipeline
+from src.pitch_shifter import YinPitchShifter
+from src.services import NOTE_FREQUENCIES
+from src.window_managers import MonoAudioProcessor
 
 
 def parse_args():

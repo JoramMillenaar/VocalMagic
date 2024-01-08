@@ -4,7 +4,7 @@ import wave
 import numpy as np
 import sounddevice as sd
 
-from source.base import AudioProcessor
+from src.base import AudioProcessor
 
 
 def array_to_wav_format(data: np.array):

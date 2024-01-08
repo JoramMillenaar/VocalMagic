@@ -4,8 +4,8 @@ import numpy as np
 
 from pitch_detection.fft import FFTAnalyser
 from pitch_detection.yin import yin_pitch_detection
-from source.dataclasses import WaveID
-from source.services import base_frequency_indexes, loudest_harmonic_of_loudest_base
+from src.dataclasses import WaveID
+from src.services import base_frequency_indexes, loudest_harmonic_of_loudest_base
 
 
 class PitchDetector(ABC):

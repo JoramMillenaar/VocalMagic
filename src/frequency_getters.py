@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Sequence
 
-from source.services import snap_nearest_index
+from src.services import snap_nearest_index
 
 
 class FrequencyGetter(ABC):

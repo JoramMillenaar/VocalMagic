@@ -1,4 +1,4 @@
-from source.base import AudioProcessor, AudioStream
+from src.base import AudioProcessor, AudioStream
 
 
 class AudioProcessingPipeline:

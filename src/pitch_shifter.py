@@ -3,9 +3,9 @@ from abc import ABC
 import numpy as np
 
 from pitch_detection.pitch_detectors import YinPitchDetector
-from source.base import AudioProcessor
-from source.frequency_getters import FrequencyGetter
-from source.services import resample_to_size
+from src.base import AudioProcessor
+from src.frequency_getters import FrequencyGetter
+from src.services import resample_to_size
 
 
 class PitchShifter(AudioProcessor, ABC):

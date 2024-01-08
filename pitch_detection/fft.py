@@ -3,7 +3,7 @@ from functools import cached_property
 
 import numpy as np
 
-from source.window_managers import AudioOverlapProcessor
+from src.window_managers import AudioOverlapProcessor
 
 
 @dataclass

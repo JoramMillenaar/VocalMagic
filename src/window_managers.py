@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.signal import butter, lfilter
 
-from source.base import AudioProcessor
+from src.base import AudioProcessor
 
 
 class AudioOverlapProcessor(AudioProcessor):

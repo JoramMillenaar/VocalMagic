@@ -4,7 +4,7 @@ from typing import Iterator
 import numpy as np
 import sounddevice as sd
 
-from source.base import AudioStream
+from src.base import AudioStream
 
 
 class MicrophoneStream(AudioStream):
