@@ -95,4 +95,14 @@ def resample_to_size(audio_chunk: np.array, factor: float):
     return resample(audio_chunk, num=int(len(audio_chunk) * factor))
 
 
+def generate_sine_wave(freq: float, chunk_size: int, sample_rate: int, volume: float):
+    t = 0
+    omega = 2 * np.pi * freq
+    while True:
+        samples = np.arange(t, t + chunk_size, dtype=np.float32) / sample_rate
+        chunk = np.sin(omega * samples) * volume
+        yield chunk
+        t += chunk_size
+
+
 NOTE_FREQUENCIES = tuple(calculate_frequency(key) for key in range(16, 89))

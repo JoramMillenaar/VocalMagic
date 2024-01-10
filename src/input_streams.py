@@ -3,6 +3,7 @@ from typing import Iterator
 
 import numpy as np
 import sounddevice as sd
+from src.services import generate_sine_wave
 
 from src.base import AudioStream
 
@@ -64,3 +65,14 @@ class WAVFileReadStream(AudioStream):
     def close(self):
         self.wav_file.close()
         super().close()
+
+
+class SineWaveStream(AudioStream):
+    def __init__(self, frequency: float, amplitude: float, chunk_size: int, sample_rate: int):
+        super().__init__(sample_rate=sample_rate)
+        self.amplitude = amplitude
+        self.chunk_size = chunk_size
+        self.frequency = frequency
+
+    def iterable(self):
+        return generate_sine_wave(self.frequency, self.chunk_size, self.sample_rate, self.amplitude)
