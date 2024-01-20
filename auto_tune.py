@@ -1,12 +1,13 @@
 import argparse
 
+from AudioIO.input_streams import WAVFileReadStream, MicrophoneStream
+from AudioIO.output_streams import AudioFileOutputProcessor, AudioPlaybackProcessor
+from pypitch.detectors import YinPitchDetector
+
 from src.frequency_getters import NearestFrequencyGetter
-from src.input_streams import MicrophoneStream, WAVFileReadStream
-from src.outputs import AudioPlaybackProcessor, AudioFileOutputProcessor
 from src.pipelines import AudioProcessingPipeline
-from src.pitch_shifter import YinPitchShifter
+from src.pitch_shifter import PitchShifter
 from src.services import NOTE_FREQUENCIES
-from src.window_managers import MonoAudioProcessor
 
 
 def parse_args():
@@ -31,8 +32,6 @@ def parse_args():
 def main():
     args = parse_args()
 
-    to_mono = MonoAudioProcessor()  # Not yet supporting multi-channel audio forms
-
     # Select audio source based on the provided argument
     if args.source_file:
         audio_source = WAVFileReadStream(args.source_file, chunk_size=args.chunk_size)
@@ -40,13 +39,12 @@ def main():
     else:
         audio_source = MicrophoneStream(sample_rate=args.sample_rate, chunk_size=args.chunk_size)
 
-    pitch_shifter = YinPitchShifter(
+    pitch_shifter = PitchShifter(
         frequency_getter=NearestFrequencyGetter(NOTE_FREQUENCIES),
-        sample_rate=args.sample_rate
+        pitch_detector=YinPitchDetector(args.sample_rate)
     )
 
     pipeline = AudioProcessingPipeline()
-    pipeline.add_processor(to_mono)
     pipeline.add_processor(pitch_shifter)
 
     # Select output destination based on the provided argument
@@ -57,7 +55,7 @@ def main():
         speaker_output = AudioPlaybackProcessor(sample_rate=args.sample_rate, chunk_size=args.chunk_size)
         pipeline.add_processor(speaker_output)
 
-    pipeline.run(audio_source=audio_source)
+    pipeline.stream(audio_source=audio_source)
 
 
 if __name__ == '__main__':

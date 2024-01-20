@@ -1,25 +1,16 @@
-from abc import ABC
+from numpy._typing import NDArray
+from pypitch.detectors import PitchDetector
 
-import numpy as np
-
-from pitch_detection.pitch_detectors import YinPitchDetector
-from src.base import AudioProcessor
 from src.frequency_getters import FrequencyGetter
 from src.services import resample_to_size
 
 
-class PitchShifter(AudioProcessor, ABC):
-    def __init__(self, frequency_getter: FrequencyGetter):
+class PitchShifter:
+    def __init__(self, frequency_getter: FrequencyGetter, pitch_detector: PitchDetector):
         self.frequency_getter = frequency_getter
+        self.pitch_detector = pitch_detector
 
-
-class YinPitchShifter(PitchShifter):
-    def __init__(self, frequency_getter: FrequencyGetter, sample_rate: int):
-        super().__init__(frequency_getter)
-        self.pitch_detector = YinPitchDetector(sample_rate)
-
-    def process(self, audio_chunk: np.ndarray):
-        f0 = self.pitch_detector.extract_base_frequency(audio_chunk)
-        target_frequency = self.frequency_getter.get_target_frequency(f0.frequency)
-        stretch_factor = f0.frequency / target_frequency
-        return resample_to_size(audio_chunk, stretch_factor)
+    def process(self, audio_chunk: NDArray) -> NDArray:
+        frequency = self.pitch_detector.detect_frequency(audio_chunk)
+        target_frequency = self.frequency_getter.get_target_frequency(frequency)
+        return resample_to_size(audio_chunk, factor=frequency / target_frequency)
