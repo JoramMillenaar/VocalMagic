@@ -1,6 +1,7 @@
 from typing import Sequence
 
 import numpy as np
+from numpy._typing import NDArray
 from scipy.signal import resample
 
 
@@ -33,18 +34,13 @@ def snap_nearest_index(value: float, options: Sequence[float]) -> int:
     return nearest_index
 
 
-def resample_to_size(audio_chunk: np.array, factor: float):
-    return resample(audio_chunk, num=int(len(audio_chunk) * factor))
+def resample_to_size(audio_data: NDArray, factor: float) -> np.ndarray:
+    if len(audio_data.shape) == 1:
+        return resample(audio_data, num=int(len(audio_data) * factor))
 
-
-def generate_sine_wave(freq: float, chunk_size: int, sample_rate: int, volume: float):
-    t = 0
-    omega = 2 * np.pi * freq
-    while True:
-        samples = np.arange(t, t + chunk_size, dtype=np.float32) / sample_rate
-        chunk = np.sin(omega * samples) * volume
-        yield chunk
-        t += chunk_size
+    channels = audio_data.shape[0]
+    resampled_data = [resample(audio_data[c], num=int(len(audio_data[c]) * factor)) for c in range(channels)]
+    return np.array(resampled_data, dtype=np.float32)
 
 
 NOTE_FREQUENCIES = tuple(calculate_frequency(key) for key in range(16, 89))

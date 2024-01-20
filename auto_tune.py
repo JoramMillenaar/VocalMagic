@@ -49,10 +49,12 @@ def main():
 
     # Select output destination based on the provided argument
     if args.output_file:
-        audio_output = AudioFileOutputProcessor(args.output_file, args.sample_rate)
+        audio_output = AudioFileOutputProcessor(args.output_file, args.sample_rate, audio_source.channels)
         pipeline.add_processor(audio_output)
     else:
-        speaker_output = AudioPlaybackProcessor(sample_rate=args.sample_rate, chunk_size=args.chunk_size)
+        speaker_output = AudioPlaybackProcessor(
+            sample_rate=args.sample_rate, chunk_size=args.chunk_size, channels=audio_source.channels
+        )
         pipeline.add_processor(speaker_output)
 
     pipeline.stream(audio_source=audio_source)

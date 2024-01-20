@@ -12,5 +12,7 @@ class PitchShifter:
 
     def process(self, audio_chunk: NDArray) -> NDArray:
         frequency = self.pitch_detector.detect_frequency(audio_chunk)
-        target_frequency = self.frequency_getter.get_target_frequency(frequency)
-        return resample_to_size(audio_chunk, factor=frequency / target_frequency)
+        if 40 < frequency < 1100:
+            target_frequency = self.frequency_getter.get_target_frequency(frequency)
+            return resample_to_size(audio_chunk, factor=frequency / target_frequency)
+        return audio_chunk
