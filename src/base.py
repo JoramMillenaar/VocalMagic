@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Iterator
+from typing import Iterator, Protocol
 
 import numpy as np
 
@@ -52,7 +52,6 @@ class AudioStream(Iterator, ABC):
         self.close()
 
 
-class AudioProcessor(ABC):
-    @abstractmethod
+class AudioProcessor(Protocol):
     def process(self, audio_chunk: np.ndarray) -> np.ndarray:
         pass
