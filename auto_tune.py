@@ -1,7 +1,7 @@
 import argparse
 
 from AudioIO.input_streams import WAVFileReadStream, MicrophoneStream
-from AudioIO.output_streams import AudioFileOutputProcessor, AudioPlaybackProcessor
+from AudioIO.output_streams import AudioPlaybackProcessor, WAVFileWriteStream
 from pypitch.detectors import YinPitchDetector
 
 from src.frequency_getters import NearestFrequencyGetter
@@ -49,7 +49,7 @@ def main():
 
     # Select output destination based on the provided argument
     if args.output_file:
-        audio_output = AudioFileOutputProcessor(args.output_file, args.sample_rate, audio_source.channels)
+        audio_output = WAVFileWriteStream(args.output_file, args.sample_rate, audio_source.channels)
         pipeline.add_processor(audio_output)
     else:
         speaker_output = AudioPlaybackProcessor(
